@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        width: 350px;
+        min-height: 400px;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #e8f5e8 0%, #f0f9f0 100%);
+      }
+
+      .header {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .header p {
+        margin: 5px 0 0 0;
+        opacity: 0.9;
+        font-size: 14px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .section {
+        margin-bottom: 20px;
+      }
+
+      .section h3 {
+        margin: 0 0 10px 0;
+        color: #2e7d32;
+        font-size: 16px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+      }
+
+      input[type="password"]:focus,
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #4caf50;
+      }
+
+      .btn {
+        width: 100%;
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .status {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .status.success {
+        background: #e8f5e8;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+      }
+
+      .status.error {
+        background: #ffebee;
+        color: #d32f2f;
+        border: 1px solid #ffcdd2;
+      }
+
+      .instructions {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #4caf50;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .instructions h4 {
+        margin: 0 0 8px 0;
+        color: #2e7d32;
+      }
+
+      .instructions ol {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .instructions li {
+        margin-bottom: 4px;
+      }
+
+      .link {
+        color: #4caf50;
+        text-decoration: none;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      .divider {
+        height: 1px;
+        background: #e0e0e0;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🌱 Eco Product Finder</h1>
+      <p>Find sustainable alternatives while shopping</p>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <h3>API Configuration</h3>
+        <div class="form-group">
+          <label for="apiKey">Gemini API Key:</label>
+          <input
+            type="password"
+            id="apiKey"
+            placeholder="Enter your Gemini API key"
+          />
+        </div>
+        <button class="btn" id="saveBtn">Save API Key</button>
+        <div id="status"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section">
+        <div class="instructions">
+          <h4>How to get your Gemini API key:</h4>
+          <ol>
+            <li>
+              Visit
+              <a
+                href="https://makersuite.google.com/app/apikey"
+                target="_blank"
+                class="link"
+                >Google AI Studio</a
+              >
+            </li>
+            <li>Sign in with your Google account</li>
+            <li>Click "Create API Key"</li>
+            <li>Copy the generated key</li>
+            <li>Paste it above and click Save</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section">
+        <div class="instructions">
+          <h4>How to use:</h4>
+          <ol>
+            <li>Visit any Amazon product page</li>
+            <li>Click the green 🌱 button</li>
+            <li>Click "Find Eco Alternatives"</li>
+            <li>Browse sustainable options</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
