@@ -18,6 +18,7 @@
     {
       "matches": [
         "https://*.amazon.com/*",
+        "https://*.amazon.in/*",
         "https://*.amazon.co.uk/*",
         "https://*.amazon.de/*"
       ],
@@ -38,6 +39,7 @@
     {
       "resources": ["sidebar.html"],
       "matches": [
+        "https://*.amazon.in/*",
         "https://*.amazon.com/*",
         "https://*.amazon.co.uk/*",
         "https://*.amazon.de/*"
