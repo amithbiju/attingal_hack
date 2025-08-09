@@ -6,6 +6,7 @@
   "permissions": ["activeTab", "storage"],
   "host_permissions": [
     "https://*.amazon.com/*",
+    "https://*.amazon.in/*",
     "https://*.amazon.co.uk/*",
     "https://*.amazon.de/*",
     "https://generativelanguage.googleapis.com/*"
