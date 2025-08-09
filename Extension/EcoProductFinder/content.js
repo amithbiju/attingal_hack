@@ -282,7 +282,7 @@
         </div>
         <div class="eco-price">Estimated: ${alt.estimatedPrice || "N/A"}</div>
         <a href="${alt.amazonSearchUrl}" target="_blank" class="eco-buy-btn">
-          🛒 Search on Amazon
+          🛒 Search
         </a>
       </div>
     `

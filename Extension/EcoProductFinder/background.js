@@ -52,7 +52,9 @@ class GeminiAPI {
 
   async findEcoAlternatives(productInfo) {
     const prompt = `
-    Analyze this product information and suggest 3-5 eco-friendly, organic, or sustainable alternatives:
+    Analyze this product information and suggest eco-friendly, organic, or sustainable alternatives:
+    
+    This is the product description:
     
     Product: ${productInfo.title}
     Category: ${productInfo.category}
@@ -60,7 +62,15 @@ class GeminiAPI {
     Description: ${productInfo.description}
     EcoAttributes: ${productInfo.ecoAttributes ? JSON.stringify(productInfo.ecoAttributes) : "[]"}
     
-    Please provide alternatives in this exact JSON format:
+    While suggesting the Keep these rules in mind : 
+      - The eco friendly alternative should resemble the product in terms of features. 
+      - Also the alternative product should not have very large differences from the original product.
+      - If there are no eco friendly products, but there can be refurbished or second hand ones, then show that.
+      - If the product has similar ecological impact, but varies differently from the main product, then dont suggest alterative.
+      - If there cant be either of the options , return an Empty array.
+      - If you cant suggest a product then return an empty array.
+    
+      Please provide alternatives in this exact JSON format:
     {
       "alternatives": [
         {
