@@ -1,9 +1,6 @@
-// Content script for analyzing Amazon pages
+// Content script for analyzing Amazon pages (uses background for enrichment+Gemini)
 (function () {
   "use strict";
-
-  // Prevent conflicts with Amazon's scripts
-  const originalConsoleLog = console.log;
 
   class AmazonPageAnalyzer {
     constructor() {
@@ -13,7 +10,7 @@
       console.log("Eco Finder: Class instantiated");
     }
 
-    // Extract product information from Amazon page
+    // Keep scraping logic exactly the same
     extractProductInfo() {
       const productInfo = {
         title: "",
@@ -110,7 +107,7 @@
       return productInfo;
     }
 
-    // Check if current page is a product page
+    // Other UI methods (sidebar, fab, displayAlternatives) remain unchanged
     isProductPage() {
       const productIndicators = [
         "#productTitle",
@@ -134,7 +131,6 @@
       return isProductPage;
     }
 
-    // Create and inject sidebar
     createSidebar() {
       if (this.sidebarInjected) return;
 
@@ -170,7 +166,6 @@
       });
     }
 
-    // Show sidebar
     showSidebar() {
       const sidebar = document.getElementById("eco-finder-sidebar");
       if (sidebar) {
@@ -178,19 +173,17 @@
       }
     }
 
-    // Find eco alternatives
+    // Now calls background 'enrichAndFindAlternatives' so enrichment & Gemini are centralized
     async findAlternatives() {
       const loadingDiv = document.getElementById("eco-loading");
       const resultsDiv = document.getElementById("eco-results");
       const findBtn = document.getElementById("eco-find-btn");
 
-      // If no product info, try to extract it again
       if (!this.currentProductInfo || !this.currentProductInfo.title) {
         console.log("Eco Finder: Re-extracting product info...");
         this.currentProductInfo = this.extractProductInfo();
       }
 
-      // If still no product info, create a test scenario
       if (!this.currentProductInfo || !this.currentProductInfo.title) {
         console.log("Eco Finder: No product detected, using test data");
         this.currentProductInfo = {
@@ -213,17 +206,23 @@
       resultsDiv.innerHTML = "";
 
       try {
+        // Single end-to-end call to background
         const response = await new Promise((resolve) => {
           chrome.runtime.sendMessage(
             {
-              action: "findAlternatives",
+              action: "enrichAndFindAlternatives",
               productInfo: this.currentProductInfo,
             },
             resolve
           );
         });
 
-        console.log("Eco Finder: API Response:", response);
+        console.log("Eco Finder: Background response:", response);
+
+        // console-visible fallback info: enrichment steps applied
+        if (response && response.enrichmentSteps) {
+          console.info("Eco Finder: enrichmentSteps:", response.enrichmentSteps);
+        }
 
         loadingDiv.style.display = "none";
         findBtn.disabled = false;
@@ -233,11 +232,21 @@
           response.alternatives &&
           response.alternatives.alternatives
         ) {
+          // If enriched info available, update local reference (useful for debugging)
+          if (response.enrichedProductInfo) {
+            this.currentProductInfo = response.enrichedProductInfo;
+          }
           this.displayAlternatives(response.alternatives.alternatives);
         } else {
-          resultsDiv.innerHTML = `<p class="eco-error">Error: ${
-            response.error || "Could not find alternatives"
-          }</p>`;
+          // If Gemeni failed but enrichment succeeded, still show a helpful message
+          const errorMsg = response.error || response.geminiError || "Could not find alternatives";
+          const enrichedNote = response.enrichedProductInfo
+            ? " (enrichment succeeded — see console.enrichedProductInfo)"
+            : "";
+          resultsDiv.innerHTML = `<p class="eco-error">Error: ${errorMsg}${enrichedNote}</p>`;
+          if (response.enrichedProductInfo) {
+            console.log("Eco Finder: Enriched product info available:", response.enrichedProductInfo);
+          }
         }
       } catch (error) {
         console.error("Eco Finder: Error finding alternatives:", error);
@@ -247,7 +256,6 @@
       }
     }
 
-    // Display alternatives in sidebar
     displayAlternatives(alternatives) {
       const resultsDiv = document.getElementById("eco-results");
 
@@ -284,7 +292,6 @@
       resultsDiv.innerHTML = alternativesHtml;
     }
 
-    // Initialize the analyzer
     init() {
       if (this.initialized) {
         console.log("Eco Finder: Already initialized, skipping");
@@ -294,7 +301,6 @@
       console.log("Eco Finder: Initializing on", window.location.href);
       this.initialized = true;
 
-      // Always create the floating button for testing
       this.createFloatingButton();
 
       if (this.isProductPage()) {
@@ -305,26 +311,21 @@
         console.log(
           "Eco Finder: Not a product page, but button still available for testing"
         );
-        // Create a minimal sidebar even on non-product pages for testing
         this.createSidebar();
       }
     }
 
-    // Create floating action button
     createFloatingButton() {
-      // Check if button already exists
       if (document.getElementById("eco-finder-fab")) {
         console.log("Eco Finder: Floating button already exists");
         return;
       }
 
-      console.log("Eco Finder: Creating floating button");
       const button = document.createElement("div");
       button.id = "eco-finder-fab";
       button.innerHTML = "🌱";
       button.title = "Find Eco Alternatives";
 
-      // Add styles directly to avoid conflicts
       button.style.cssText = `
       position: fixed !important;
       bottom: 30px !important;
@@ -364,7 +365,6 @@
     }
   }
 
-  // Initialize when DOM is loaded
   function initializeEcoFinder() {
     try {
       console.log("Eco Finder: Attempting initialization...");
@@ -376,16 +376,13 @@
     }
   }
 
-  // Multiple initialization attempts
   console.log("Eco Finder: Content script loaded");
 
-  // Immediate attempt
   setTimeout(() => {
     console.log("Eco Finder: Immediate initialization attempt");
     initializeEcoFinder();
   }, 100);
 
-  // DOM ready attempt
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       console.log("Eco Finder: DOM ready initialization");
@@ -396,13 +393,11 @@
     setTimeout(initializeEcoFinder, 500);
   }
 
-  // Window load attempt
   window.addEventListener("load", () => {
     console.log("Eco Finder: Window load initialization");
     setTimeout(initializeEcoFinder, 1000);
   });
 
-  // Handle navigation changes (for single-page apps)
   let lastUrl = location.href;
   new MutationObserver(() => {
     const url = location.href;
@@ -410,7 +405,6 @@
       lastUrl = url;
       console.log("Eco Finder: URL changed to", url);
       setTimeout(() => {
-        // Reset initialization flag for new page
         if (window.ecoAnalyzer) {
           window.ecoAnalyzer.initialized = false;
         }
@@ -419,7 +413,6 @@
     }
   }).observe(document, { subtree: true, childList: true });
 
-  // Keep reference for debugging
   window.ecoAnalyzer = null;
   setTimeout(() => {
     window.ecoAnalyzer = new AmazonPageAnalyzer();

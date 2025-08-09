@@ -1,70 +1,42 @@
-// Popup script for Eco Product Finder
-document.addEventListener("DOMContentLoaded", function () {
-  const apiKeyInput = document.getElementById("apiKey");
+document.addEventListener("DOMContentLoaded", () => {
+  const geminiInput = document.getElementById("geminiApiKey");
+  const hfInput = document.getElementById("hfApiKey");
+  const visionInput = document.getElementById("googleVisionApiKey");
   const saveBtn = document.getElementById("saveBtn");
   const statusDiv = document.getElementById("status");
 
-  // Load existing API key
-  chrome.runtime.sendMessage({ action: "getApiKey" }, (response) => {
-    if (response.apiKey) {
-      apiKeyInput.value = response.apiKey;
-      showStatus("API key loaded successfully", "success");
-    }
+  // Load stored keys
+  chrome.storage.sync.get(["geminiApiKey", "hfApiKey", "googleVisionApiKey"], (items) => {
+    if (items.geminiApiKey) geminiInput.value = items.geminiApiKey;
+    if (items.hfApiKey) hfInput.value = items.hfApiKey;
+    if (items.googleVisionApiKey) visionInput.value = items.googleVisionApiKey;
   });
 
-  // Save API key
-  saveBtn.addEventListener("click", function () {
-    const apiKey = apiKeyInput.value.trim();
+  saveBtn.addEventListener("click", () => {
+    const geminiKey = geminiInput.value.trim();
+    const hfKey = hfInput.value.trim();
+    const visionKey = visionInput.value.trim();
 
-    if (!apiKey) {
-      showStatus("Please enter a valid API key", "error");
-      return;
+    if (!geminiKey || !hfKey || !visionKey) {
+      return showStatus("Please enter all API keys", "error");
     }
 
-    // Validate API key format (basic check)
-    if (!apiKey.startsWith("AIza") || apiKey.length < 20) {
-      showStatus("Invalid API key format. Please check your key.", "error");
-      return;
-    }
-
-    saveBtn.disabled = true;
-    saveBtn.textContent = "Saving...";
-
-    chrome.runtime.sendMessage(
+    chrome.storage.sync.set(
       {
-        action: "saveApiKey",
-        apiKey: apiKey,
+        geminiApiKey: geminiKey,
+        hfApiKey: hfKey,
+        googleVisionApiKey: visionKey,
       },
-      (response) => {
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Save API Key";
-
-        if (response.success) {
-          showStatus("API key saved successfully!", "success");
-        } else {
-          showStatus("Failed to save API key", "error");
-        }
+      () => {
+        showStatus("API keys saved successfully!", "success");
       }
     );
-  });
-
-  // Handle Enter key in API key input
-  apiKeyInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      saveBtn.click();
-    }
   });
 
   function showStatus(message, type) {
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
     statusDiv.style.display = "block";
-
-    // Hide status after 3 seconds for success messages
-    if (type === "success") {
-      setTimeout(() => {
-        statusDiv.style.display = "none";
-      }, 3000);
-    }
+    if (type === "success") setTimeout(() => (statusDiv.style.display = "none"), 3000);
   }
 });

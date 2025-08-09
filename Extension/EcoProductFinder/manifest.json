@@ -3,13 +3,15 @@
   "version": "1.0",
   "description": "Find eco-friendly alternatives to products while browsing Amazon",
   "manifest_version": 3,
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage","scripting"],
   "host_permissions": [
-    "https://*.amazon.com/*",
-    "https://*.amazon.in/*",
-    "https://*.amazon.co.uk/*",
-    "https://*.amazon.de/*",
-    "https://generativelanguage.googleapis.com/*"
+  "https://*.amazon.com/*",
+  "https://*.amazon.in/*",
+  "https://*.amazon.co.uk/*",
+  "https://*.amazon.de/*",
+  "https://generativelanguage.googleapis.com/*",
+  "https://api-inference.huggingface.co/*",
+  "https://vision.googleapis.com/*"
   ],
   "background": {
     "service_worker": "background.js"
