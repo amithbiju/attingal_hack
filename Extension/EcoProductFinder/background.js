@@ -3,12 +3,13 @@ class GeminiAPI {
   constructor(apiKey) {
     this.apiKey = apiKey;
     this.baseUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
   }
 
   async generateContent(prompt) {
     try {
-      const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
+      console.log(`${this.baseUrl}?key=${this.apiKey}`)
+      const body = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,10 +31,11 @@ class GeminiAPI {
             maxOutputTokens: 1024,
           },
         }),
-      });
+      }
+      const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, body);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
